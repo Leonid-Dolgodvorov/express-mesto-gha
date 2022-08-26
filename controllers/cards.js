@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const { NotFoundError } = require('../errors/NotFoundError');
+const { NOT_VALID_DATA_ERROR, NOT_FOUND_ERROR, SERVER_ERROR } = require('../utils/constants');
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
@@ -7,9 +8,9 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
+        res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
       }
     });
 };
@@ -21,29 +22,29 @@ const deleteCard = (req, res) => {
       const notFoundError = new NotFoundError('Ошибка: карточка не найдена');
       throw notFoundError;
     })
-    .then(() => res.status(201).send({ message: `Карточка с cardId ${cardId} удалена` }))
+    .then(() => res.status(200).send({ message: `Карточка с cardId ${cardId} удалена` }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
+        res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
       } else if (err.name === 'NotFoundError') {
-        res.status(404).send({ message: 'Ошибка: карточка не найдена' });
+        res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(500).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
       }
     });
 };
 
 const getCards = (req, res) => Card.find({})
-  .then((cards) => res.status(201).send({ data: cards }))
+  .then((cards) => res.status(200).send({ data: cards }))
   .catch((err) => {
-    res.status(500).send({ message: `internal server error ${err}` });
+    res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
   });
 
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true },
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const notFoundError = new NotFoundError('Ошибка: карточка не найдена');
@@ -54,11 +55,11 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Ошибка лайка: переданы некорректные данные' });
+        res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка лайка: переданы некорректные данные' });
       } else if (err.name === 'NotFoundError') {
-        res.status(404).send({ message: 'Ошибка: карточка не найдена' });
+        res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(500).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
       }
     });
 };
@@ -67,7 +68,7 @@ const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true },
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const notFoundError = new NotFoundError('Ошибка: карточка не найдена');
@@ -78,11 +79,11 @@ const dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Ошибка лайка: переданы некорректные данные' });
+        res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка лайка: переданы некорректные данные' });
       } else if (err.name === 'NotFoundError') {
-        res.status(404).send({ message: 'Ошибка: карточка не найдена' });
+        res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(500).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
       }
     });
 };
