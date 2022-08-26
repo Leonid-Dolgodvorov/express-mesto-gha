@@ -23,9 +23,9 @@ const getUser = (req, res) => User.findById(req.params.id)
   .then((user) => res.status(200).send(user))
   .catch((err) => {
     if (err.name === 'CastError') {
-      res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
-    } else if (err.name === 'notFoundError') {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: пользователь не найден' });
+      res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка поиска пользователя: переданы некорректные данные' });
+    } else if (err.name === 'NotFoundError') {
+      res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: пользователь с данным id не найден' });
     } else {
       res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
     }
