@@ -20,8 +20,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
+app.use('/cards', usersRouter);
+app.use('/users', cardsRouter);
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND_ERROR).send({ message: 'Страница не существует' });
