@@ -10,7 +10,7 @@ const createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания карточки: переданы некорректные данные' });
       } else {
-        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
       }
     });
 };
@@ -29,15 +29,15 @@ const deleteCard = (req, res) => {
       } else if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
       }
     });
 };
 
 const getCards = (req, res) => Card.find({})
   .then((cards) => res.status(200).send({ data: cards }))
-  .catch((err) => {
-    res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
+  .catch(() => {
+    res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
   });
 
 const likeCard = (req, res) => {
@@ -59,7 +59,7 @@ const likeCard = (req, res) => {
       } else if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
       }
     });
 };
@@ -83,7 +83,7 @@ const dislikeCard = (req, res) => {
       } else if (err.name === 'NotFoundError') {
         res.status(NOT_FOUND_ERROR).send({ message: 'Ошибка: карточка не найдена' });
       } else {
-        res.status(SERVER_ERROR).send({ message: `internal server error ${err}` });
+        res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
       }
     });
 };
