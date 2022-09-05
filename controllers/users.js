@@ -1,18 +1,25 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { NotFoundError } = require('../errors/NotFoundError');
 const { NOT_VALID_DATA_ERROR, NOT_FOUND_ERROR, SERVER_ERROR } = require('../utils/constants');
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания пользователя: переданы некорректные данные' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
-      }
-    });
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    })
+      .then((user) => res.status(201).send(user))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(NOT_VALID_DATA_ERROR).send({ message: 'Ошибка создания пользователя: переданы некорректные данные' });
+        } else {
+          res.status(SERVER_ERROR).send({ message: 'Внутренняя ошибка сервера' });
+        }
+      }));
 };
 
 const getUser = (req, res) => User.findById(req.params.id)
@@ -53,6 +60,26 @@ const updateProfile = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'over-secret-key', {
+        expiresIn: '7d',
+      });
+      res.cookie('jwt', token, {
+        maxAge: 3600000,
+        httpOnly: true,
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -78,4 +105,5 @@ module.exports = {
   getUsers,
   updateProfile,
   updateAvatar,
+  login,
 };

@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const { NOT_FOUND_ERROR } = require('./utils/constants');
+const {
+  createUser, login,
+} = require('./controllers/users');
 
 const app = express();
 
@@ -21,6 +24,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/', usersRouter);
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
 app.use('/', cardsRouter);
 
 app.use('*', (req, res) => {
