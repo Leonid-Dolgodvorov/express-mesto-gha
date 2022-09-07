@@ -23,7 +23,8 @@ const createUser = (req, res, next) => {
         } else {
           next(err);
         }
-      }));
+      }))
+    .catch(next);
 };
 
 const getUser = (req, res, next) => User.findById(req.params.id)
