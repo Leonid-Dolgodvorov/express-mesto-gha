@@ -1,7 +1,7 @@
 class NotValidDataError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'BadRequestError';
+    this.name = 'NotValidDataError';
     this.statusCode = 400;
   }
 }
