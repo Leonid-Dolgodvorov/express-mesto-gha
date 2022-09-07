@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundError');
-const NotValidDataError = require('../errors/NotValidDataError');
-const ConflictError = require('../errors/ConflictError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { NotValidDataError } = require('../errors/NotValidDataError');
+const { ConflictError } = require('../errors/ConflictError');
+const { UnauthorizedError } = require('../errors/UnauthorizedError');
 
 const createUser = (req, res, next) => {
   const {
@@ -13,18 +13,17 @@ const createUser = (req, res, next) => {
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
-    })
-      .then((user) => res.status(201).send(user))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new NotValidDataError('Ошибка создания пользователя: переданы некорректные данные'));
-        } else if (err.code === 11000) {
-          next(new ConflictError('Ошибка создания пользователя: пользователь с таким email уже существует'));
-        } else {
-          next(err);
-        }
-      }))
-    .catch(next);
+    }))
+    .then((user) => res.status(201).send(user))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new NotValidDataError('Ошибка создания пользователя: переданы некорректные данные'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Ошибка создания пользователя: пользователь с таким email уже существует'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const getUser = (req, res, next) => User.findById(req.params.id)

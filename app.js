@@ -12,7 +12,7 @@ const cardsRouter = require('./routes/cards');
 const {
   createUser, login,
 } = require('./controllers/users');
-const NotFoundError = require('./errors/NotFoundError');
+const { NotFoundError } = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 
 const app = express();
