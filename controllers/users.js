@@ -45,7 +45,7 @@ const getCurrentUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotValidDataError(`Переданы некорректные данные для получения пользователя ${req.user}`));
+        next(new NotValidDataError('Переданы некорректные данные для получения пользователя'));
       } else {
         next(err);
       }
