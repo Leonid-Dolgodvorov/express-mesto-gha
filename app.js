@@ -23,7 +23,9 @@ const options = {
   origin: [
     'http://localhost:3010',
     'https://front.dolgodvorov.nomoredomains.sbs',
+    'http://front.dolgodvorov.nomoredomains.sbs',
     'https://leonid-dolgodvorov.github.io',
+    'http://leonid-dolgodvorov.github.io',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
