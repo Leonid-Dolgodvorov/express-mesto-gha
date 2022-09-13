@@ -6,10 +6,13 @@ const { JWT_SECRET } = process.env;
 
 const auth = (req, res, next) => {
   let payload;
-  if (!req.cookies.jwt) {
+  const { authorization } = req.headers;
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     next(new UnauthorizedError('Ошибка авторизации'));
   } else {
-    const token = req.cookies.jwt;
+    const token = authorization.replace('Bearer ', '');
+
     try {
       payload = jwt.verify(token, JWT_SECRET);
       req.user = payload;
